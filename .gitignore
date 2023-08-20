@@ -9,3 +9,4 @@ share/
 pyvenv.cfg
 yolov3u.pt
 yolov8m.pt
+.gitignore
