@@ -38,14 +38,7 @@ class DenseNet121(nn.Module):
 class CheXNet():
     def __init__(self, ckpt_path):
         cudnn.benchmark = True
-        self.model = DenseNet121(14).cuda()
-        #self.activation = {}
-        #def get_activation(name):
-        #    def hook(model, input, output):
-        #        self.activation[name] = output.detach()
-        #    return hook
-        #self.model.densenet121.features.denseblock4.denselayer16.conv2.register_forward_hook(get_activation('denseblock4.denselayer16.conv2'))
-
+        self.model = DenseNet121(14).cuda() 
         # hook the feature extractor
         self.features_blobs = []
         def hook_feature(module, input, output):
@@ -95,24 +88,22 @@ class CheXNet():
                                         (lambda crops: torch.stack([normalize(crop) for crop in crops]))
                                         ])
 
-        train_nodes, eval_nodes = get_graph_node_names(torchvision.models.densenet121(pretrained=True))
-        print(train_nodes)
-        print(eval_nodes)
-
     def returnCAM(self, feature_conv, weight_softmax, class_idx):
         # generate the class activation maps upsample to 256x256
         size_upsample = (256, 256)
         bz, nc, h, w = feature_conv.shape
-        print(weight_softmax.shape)
-        print(nc, h*w)
         output_cam = []
         for idx in class_idx:
-            cam = weight_softmax[idx].dot(feature_conv.reshape((nc, h*w)))
+            feature_conv_flat = feature_conv.reshape((nc, bz*h*w))
+            cam = weight_softmax[idx].dot(feature_conv_flat)
+            # Slice a 7x7 matrix
+            cam = cam[0:49]
             cam = cam.reshape(h, w)
             cam = cam - np.min(cam)
             cam_img = cam / np.max(cam)
             cam_img = np.uint8(255 * cam_img)
-            output_cam.append(cv2.resize(cam_img, size_upsample))
+            output_cam.append(cv.resize(cam_img, size_upsample))
+        print("SAI")
         return output_cam
         
     
@@ -132,9 +123,9 @@ class CheXNet():
         probs, idx = h_x.sort(0, True)
         probs = probs.cpu().numpy()
         idx = idx.cpu().numpy()
-        #return pred, self.activation['denseblock4.denselayer16.conv2']
-        print(np.shape(self.features_blobs[0]))
-        return pred, self.returnCAM(self.features_blobs[0], self.weight_softmax, [idx[0]])
+        cam = self.returnCAM(self.features_blobs[0], self.weight_softmax, idx[0])
+        
+        return pred, cam
 
 
 if __name__ == '__main__':
@@ -143,18 +134,29 @@ if __name__ == '__main__':
 
     image = Image.open('chest-example1.png')
 
-    pred, cam = model.predict(image)
+    pred, cams = model.predict(image)
     
-    print(type(cam.data.cpu().numpy()[0][0]))
-    print(type(pred.data.cpu().numpy()[0][0]))
-    print(np.shape(pred.data.cpu().numpy()))
-    print(np.shape(cam.data.cpu().numpy()))
-    print(np.shape(cam.data.cpu().numpy()[:, :, 0, 0]))
+    #print(type(cam.data.cpu().numpy()[0][0]))
+    #print(type(pred.data.cpu().numpy()[0][0]))
+    #print(np.shape(pred.data.cpu().numpy()))
+    #print(np.shape(cam.data.cpu().numpy()))
+    #print(np.shape(cam.data.cpu().numpy()[:, :, 0, 0]))
 
-    
-    cv.imshow('image', np.array(image))
-    cv.imshow('pred', pred.data.cpu().numpy())
-    cv.imshow('cam', cam.data.cpu().numpy()[:, :, 0, 0])
+    image = np.array(image)
+    img = cv.cvtColor(image, cv.COLOR_RGB2BGR)
+    cv.imshow('original', image)
+    cv.imshow('image', img)
+    i = 0
+    for cam in cams:
+        print("A")
+        #cv.imshow('pred', pred.data.cpu().numpy())
+        height, width, _ = img.shape
+        heatmap = cv.applyColorMap(cv.resize(cam,(width, height)), cv.COLORMAP_JET)
+        result = heatmap * 0.3 + img * 0.5
+        result = result.astype(np.uint8)
+        cv.imshow('CAM' + str(i), result)
+        i += 1
+
 
     print(pred.data.cpu().numpy().argmax())
     cv.waitKey(0)
