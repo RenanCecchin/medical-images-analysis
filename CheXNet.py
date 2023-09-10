@@ -5,7 +5,6 @@ import numpy as np
 import torch
 import torch.nn as nn
 from torch.nn import functional as F
-import torch.backends.cudnn as cudnn
 import torchvision
 import torchvision.transforms as transforms
 from torchvision.models.feature_extraction import get_graph_node_names
@@ -39,7 +38,7 @@ class DenseNet121(nn.Module):
 class CheXNet():
     def __init__(self, ckpt_path):
         cudnn.benchmark = True
-        self.model = DenseNet121(14).cuda() 
+        self.model = DenseNet121(14) 
         # hook the feature extractor
         self.features_blobs = []
         def hook_feature(module, input, output):
@@ -51,7 +50,7 @@ class CheXNet():
         params = list(self.model.parameters())
         self.weight_softmax = np.squeeze(params[-2].data.cpu().numpy())
 
-        self.model = torch.nn.DataParallel(self.model).cuda()
+        self.model = torch.nn.DataParallel(self.model)
 
         if os.path.isfile(ckpt_path):
             print("=> loading checkpoint '{}'".format(ckpt_path))
