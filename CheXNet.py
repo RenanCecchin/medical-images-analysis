@@ -53,7 +53,7 @@ class CheXNet():
 
         if os.path.isfile(ckpt_path):
             print("=> loading checkpoint '{}'".format(ckpt_path))
-            checkpoint = torch.load(ckpt_path)
+            checkpoint = torch.load(ckpt_path, map_location=torch.device('cpu'))
 
             # Fix for original code trained model loading
             state_dict = checkpoint['state_dict']
