@@ -37,7 +37,6 @@ class DenseNet121(nn.Module):
 
 class CheXNet():
     def __init__(self, ckpt_path):
-        cudnn.benchmark = True
         self.model = DenseNet121(14) 
         # hook the feature extractor
         self.features_blobs = []
