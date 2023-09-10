@@ -1,5 +1,6 @@
 import os
 import re
+import streamlit as st
 import numpy as np
 import torch
 import torch.nn as nn
@@ -87,6 +88,10 @@ class CheXNet():
                                         transforms.Lambda
                                         (lambda crops: torch.stack([normalize(crop) for crop in crops]))
                                         ])
+    
+
+    def get_class(self, pred):
+        return CLASS_NAMES[pred] 
 
     def returnCAM(self, feature_conv, weight_softmax, class_idx):
         # generate the class activation maps upsample to 256x256
@@ -103,9 +108,7 @@ class CheXNet():
             cam_img = cam / np.max(cam)
             cam_img = np.uint8(255 * cam_img)
             output_cam.append(cv.resize(cam_img, size_upsample))
-        print("SAI")
-        return output_cam
-        
+        return output_cam   
     
     def predict(self, image):
         """
@@ -125,7 +128,7 @@ class CheXNet():
         idx = idx.cpu().numpy()
         cam = self.returnCAM(self.features_blobs[0], self.weight_softmax, idx[0])
         
-        return pred, cam
+        return idx[0], cam
 
 
 if __name__ == '__main__':

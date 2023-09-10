@@ -1,65 +1,52 @@
 import streamlit as st
-from ultralytics.yolo.utils.ops import scale_image
-from recognition import yolo_predictor
+from image_selector import ImageSelector
+from CheXNet import CheXNet
 import  cv2 as cv
 import numpy as np
 from PIL import Image
 
+@st.cache_resource
+def load_model(weight_path):
+    return CheXNet(weight_path)
+
 def main():
-    bb_predictor = yolo_predictor("yolov8m.pt")
-    segmentation_predictor = yolo_predictor("yolov8m-seg.pt")
-    st.title("Object recognition")
-    segmentation = st.checkbox("Segmentation")
-    img = st.file_uploader("Upload an image", type=["jpg", "png"])
+    chexnet = load_model('model.pth.tar')
+    st.title("Reconhecimento de doenças de Tórax")
+    img = st.file_uploader("Upload an image", type=["jpg", "png", "svg"])
+
+    if "index" not in st.session_state:
+        st.session_state.index = 0
     if img is not None:
         img = Image.open(img)
-        img = np.array(img)
-        st.image(img, channels="RGB")
-        if not segmentation:
-            result = bb_predictor.predict(img)
-            recognized_img = img.copy()
-            for box in result.boxes:
-                class_id = result.names[box.cls[0].item()]
-                coords = box.xyxy[0].tolist()
-                coords = [round(x) for x in coords]
-                conf = round(box.conf[0].item(), 2)
-                scale = 0.9
-                cv.rectangle(recognized_img, (coords[0], coords[1]), (coords[2], coords[3]), (0, 255, 0), 2)
-                cv.putText(recognized_img, f"{class_id} {conf}", (coords[0], coords[1]), cv.FONT_HERSHEY_SIMPLEX, scale, (0, 255, 0), 2)
-            st.image(recognized_img, channels="RGB")
+        pred, cams = chexnet.predict(img)
+        result_imgs = []
+        result_img = np.array(img)
+        result_img = cv.cvtColor(result_img, cv.COLOR_RGB2BGR)
+        for cam in cams:
+            height, width, _ = result_img.shape
+            heatmap = cv.applyColorMap(cv.resize(cam,(width, height)), cv.COLORMAP_JET)
+            predicted_img = heatmap * 0.3 + result_img * 0.5
+            result_imgs.append(predicted_img.astype(np.uint8))
+
+        result_imgs = ImageSelector(result_imgs, pred)
+        pred_img, label = result_imgs.get_img(st.session_state.index)
+        original, predicted = st.columns(2)
+        original.write(f"<p style='text-align: center; font-size: 20px;'>Original</p>", unsafe_allow_html=True)
+        original.image(img, channels="RGB")
+        
+        show_all = predicted.checkbox("Mostrar todas as doenças")
+        if not show_all:
+            predicted.write(f"<p style='text-align: center; font-size: 20px;'>{chexnet.get_class(label)}</p>", unsafe_allow_html=True)
+            predicted.image(pred_img, channels="RGB")
+            prev, index, nex = predicted.columns(3)
+            prev.button("Anterior", on_click=result_imgs.prev)
+            index.write(f"<p style='text-align: center; font-size: 20px;'>{st.session_state.index + 1}/{len(result_imgs)}</p>", unsafe_allow_html=True)
+            nex.button("Próxima", on_click=result_imgs.next)
         else:
-            results = segmentation_predictor.predict(img)
-            recognized_img = img.copy()
-            for result in results:
-                mask_raw = result.masks[0].cpu().data.numpy().transpose(1,2,0)
-
-                mask_3channel = cv.merge((mask_raw, mask_raw, mask_raw))
-
-                h2, w2, c2 = result.orig_img.shape
-                mask = cv.resize(mask_3channel, (w2, h2))
-
-                hsv = cv.cvtColor(mask, cv.COLOR_BGR2HSV)
-
-                lower_black = np.array([0, 0, 0])
-                upper_black = np.array([0, 0, 1])
-
-                mask = cv.inRange(mask, lower_black, upper_black)
-                mask = cv.bitwise_not(mask)
-
-                # Colorize mask
-                recognized_img[(mask==255)] = [0, 255, 0]
-                cv.addWeighted(recognized_img, 0.5, img, 0.5, 0, recognized_img)
-
-                box = result.boxes
-                class_id = results.names[box.cls[0].item()]
-                coords = box.xyxy[0].tolist()
-                coords = [round(x) for x in coords]
-
-                conf = round(box.conf[0].item(), 2)
-                scale = 0.9
-                cv.putText(recognized_img, f"{class_id} {conf}", (coords[0], coords[1]), cv.FONT_HERSHEY_SIMPLEX, scale, (0, 255, 0), 2)
-
-            st.image(recognized_img, channels="RGB")
+            for image in result_imgs.imgs:
+                predicted.image(image, channels="RGB")
+    else:
+        st.session_state.index = 0
 
 
 
