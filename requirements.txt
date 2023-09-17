@@ -2,3 +2,7 @@ ultralytics
 opencv-python-headless
 numpy
 pillow
+scipy
+numpy
+torch
+roboflow

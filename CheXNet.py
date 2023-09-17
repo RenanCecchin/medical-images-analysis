@@ -126,7 +126,7 @@ class CheXNet():
         idx = idx.cpu().numpy()
         cam = self.returnCAM(self.features_blobs[0], self.weight_softmax, idx[0])
         
-        return idx[0], cam
+        return idx[0], probs[0], cam
 
 
 if __name__ == '__main__':
@@ -136,12 +136,6 @@ if __name__ == '__main__':
     image = Image.open('chest-example1.png')
 
     pred, cams = model.predict(image)
-    
-    #print(type(cam.data.cpu().numpy()[0][0]))
-    #print(type(pred.data.cpu().numpy()[0][0]))
-    #print(np.shape(pred.data.cpu().numpy()))
-    #print(np.shape(cam.data.cpu().numpy()))
-    #print(np.shape(cam.data.cpu().numpy()[:, :, 0, 0]))
 
     image = np.array(image)
     img = cv.cvtColor(image, cv.COLOR_RGB2BGR)
