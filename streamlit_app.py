@@ -36,14 +36,14 @@ def main():
                 predicted_img = heatmap * 0.3 + result_img * 0.5
                 result_imgs.append(predicted_img.astype(np.uint8))
 
-            result_imgs = ImageSelector(result_imgs, pred)
-            pred_img, label = result_imgs.get_img(st.session_state.index)
+            result_imgs = ImageSelector(result_imgs, pred, probs)
+            pred_img, label, prob = result_imgs.get_img(st.session_state.index)
             original, predicted = st.columns(2)
             original.write(f"<p style='text-align: center; font-size: 20px;'>Original</p>", unsafe_allow_html=True)
             original.image(img, channels="RGB")
             
             show_all = predicted.checkbox("Mostrar todas as doenças")
-            predicted.write(f"<p style='text-align: center; font-size: 20px;'>{chexnet.get_class(label)} Probabilidade:{round(probs[label]*100, 3)}</p>", unsafe_allow_html=True)
+            predicted.write(f"<p style='text-align: center; font-size: 20px;'>{chexnet.get_class(label)} Probabilidade:{round(prob*100, 3)}</p>", unsafe_allow_html=True)
             predicted.image(pred_img, channels="RGB")
             prev, index, nex = predicted.columns(3)
             prev.button("Anterior", on_click=result_imgs.prev)

@@ -119,14 +119,15 @@ class CheXNet():
 
         with torch.no_grad():
             pred = self.model(image)
+
+        pred_mean = pred.mean(0)
+
+        max_prob, pred_class = pred_mean.max(0)
+
+        class_idx = pred_class.item()
+        cam = self.returnCAM(self.features_blobs[0], self.weight_softmax, [class_idx])
         
-        h_x = F.softmax(pred, dim = 1).data.squeeze()
-        probs, idx = h_x.sort(0, True)
-        probs = probs.cpu().numpy()
-        idx = idx.cpu().numpy()
-        cam = self.returnCAM(self.features_blobs[0], self.weight_softmax, idx[0])
-        
-        return idx[0], probs[0], cam
+        return pred_class.item(), max_prob.item(), cam
 
 
 if __name__ == '__main__':
@@ -135,24 +136,22 @@ if __name__ == '__main__':
 
     image = Image.open('chest-example1.png')
 
-    pred, cams = model.predict(image)
+    pred, probs, cams = model.predict(image)
+
+    print(pred)
+    print(probs)
 
     image = np.array(image)
     img = cv.cvtColor(image, cv.COLOR_RGB2BGR)
     cv.imshow('original', image)
-    cv.imshow('image', img)
     i = 0
     for cam in cams:
-        print("A")
-        #cv.imshow('pred', pred.data.cpu().numpy())
         height, width, _ = img.shape
         heatmap = cv.applyColorMap(cv.resize(cam,(width, height)), cv.COLORMAP_JET)
         result = heatmap * 0.3 + img * 0.5
         result = result.astype(np.uint8)
-        cv.imshow('CAM' + str(i), result)
+        cv.imshow('CAM' + str(i) + "pred:" + CLASS_NAMES[pred] + " " + " prob:" + str(probs), result)
         i += 1
 
-
-    print(pred.data.cpu().numpy().argmax())
     cv.waitKey(0)
     cv.destroyAllWindows()
