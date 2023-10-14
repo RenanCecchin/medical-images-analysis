@@ -1,11 +1,9 @@
-from roboflow import Roboflow
 import cv2 as cv
 import numpy as np
 from PIL import Image
 import base64
 from base64 import decodebytes
 import requests
-import matplotlib.pyplot as plt
 
 class RoboflowModel:
     def __init__(self, url, access_token, format, headers, class_name, overlap=50, confidence=50, roboflow_size = 720):
@@ -34,8 +32,23 @@ class RoboflowModel:
         url_request = "".join(parts)
 
         return url_request
+
+    def show_class_preds(self, img, preds):
+        result_imgs = []
+        labels = []
+        confs = []
+        result_img = np.array(img)
+        result_img = cv.cvtColor(result_img, cv.COLOR_RGB2BGR)
+        for pred in preds:
+            predicted_img = result_img.copy()
+            result_imgs.append(predicted_img.astype(np.uint8))
+            if self.class_name != None:
+                labels.append(pred["class"])
+            confs.append(pred["confidence"])
+
+        return result_imgs, labels, confs
     
-    def show_preds(self, img, preds):
+    def show_bb_preds(self, img, preds):
         result_imgs = []
         labels = []
         confs = []
@@ -67,7 +80,7 @@ class RoboflowModel:
         print(resp.json())
         preds = resp.json()["predictions"]
 
-        return self.show_preds(img, preds)
+        return img, preds
     
 
 

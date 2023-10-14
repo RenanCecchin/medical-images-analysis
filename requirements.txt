@@ -1,7 +1,8 @@
 opencv-python-headless
 numpy
+pandas
 pillow
 scipy
-numpy
 torch
+torchvision
 streamlit

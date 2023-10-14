@@ -108,7 +108,7 @@ class CheXNet():
             output_cam.append(cv.resize(cam_img, size_upsample))
         return output_cam   
     
-    def predict(self, image):
+    def predict(self, image, conf_threshold=0.5):
         """
         Args:
             image: a PIL image
@@ -122,12 +122,24 @@ class CheXNet():
 
         pred_mean = pred.mean(0)
 
-        max_prob, pred_class = pred_mean.max(0)
+        over_threshold = pred_mean > conf_threshold
+        over_threshold_indices = over_threshold.nonzero(as_tuple=True)
 
-        class_idx = pred_class.item()
-        cam = self.returnCAM(self.features_blobs[0], self.weight_softmax, [class_idx])
+        if len(over_threshold_indices[0]) > 0:
+            pred_classes = over_threshold_indices[0].tolist()
+            pred_probs = pred_mean[over_threshold].tolist()
+
+            cams = self.returnCAM(self.features_blobs[0], self.weight_softmax, pred_classes)
+
+            return pred_classes, pred_probs, cams
+        else:
+            return None, None, None
+        #max_prob, pred_class = pred_mean.max(0)
+
+        #class_idx = pred_class.item()
+        #cam = self.returnCAM(self.features_blobs[0], self.weight_softmax, [class_idx])
         
-        return pred_class.item(), max_prob.item(), cam
+        #return pred_class.item(), max_prob.item(), cam
 
 
 if __name__ == '__main__':
