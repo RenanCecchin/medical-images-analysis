@@ -39,11 +39,18 @@ class RoboflowModel:
         confs = []
         result_img = np.array(img)
         result_img = cv.cvtColor(result_img, cv.COLOR_RGB2BGR)
+
+        if type(preds) == dict:
+            preds = [preds]
+
         for pred in preds:
+            print("PARE IIMEDIATAMENTE")
+            print(pred)
+            print(type(pred))
             predicted_img = result_img.copy()
             result_imgs.append(predicted_img.astype(np.uint8))
             if self.class_name != None:
-                labels.append(pred["class"])
+                labels.append(pred[self.class_name])
             confs.append(pred["confidence"])
 
         return result_imgs, labels, confs

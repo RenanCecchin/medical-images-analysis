@@ -2,4 +2,4 @@ model;title;url
 CheXNet;Reconhecimento de doenças de tórax;https://github.com/arnoweng/CheXNet/tree/master
 Detector de tumores cerebrais;Reconhecimento de tumores cerebrais;https://universe.roboflow.com/roboflow-100/brain-tumor-m2pbp
 Doença de Fígado;Reconhecimento de doenças de fígado;https://universe.roboflow.com/roboflow-100/liver-disease
-HyperKvasir;Reconhecimento de doenças de estômago;https://universe.roboflow.com/simula/hyper-kvasir
+Detector de câncer de pele;Reconhecimento de câncer de pele;https://universe.roboflow.com/ucla-xvpad/a-kgfk0

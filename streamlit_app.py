@@ -37,7 +37,7 @@ def main():
         st.session_state.index = 0
     if img is not None:
         img = Image.open(img)
-
+    else:
         if selected_model == "CheXNet":
             chexnet = load_model('model.pth.tar')
             pred, confs, cams = chexnet.predict(img)
@@ -55,10 +55,10 @@ def main():
             show_image(img, pred_img, chexnet.get_class(label), conf, result_imgs)
 
         elif selected_model == "Detector de tumores cerebrais":
-            brain_tumor = RoboflowModel("https://detect.roboflow.com/brain-tumor-m2pbp/1", 
-                                        "?api_key=pbzrAqfcSaFRN8OIPpKC", "&format=json", 
+            brain_tumor = RoboflowModel("https://detect.roboflow.com/brain-tumor-m2pbp/1",
+                                        "?api_key=pbzrAqfcSaFRN8OIPpKC", "&format=json",
                                         {"Content-Type": "application/x-www-form-urlencoded"},
-                                        None)
+                                        "class")
 
             processed_img, preds = brain_tumor.predict(img)
             result_imgs, labels, confs = brain_tumor.show_bb_preds(processed_img, preds)
@@ -72,7 +72,7 @@ def main():
                                           "?api_key=pbzrAqfcSaFRN8OIPpKC", "&format=json",
                                           {"Content-Type": "application/x-www-form-urlencoded"},
                                           "class")
-            
+
             processed_img, preds = liver_disease.predict(img)
             result_imgs, labels, confs= liver_disease.show_bb_preds(processed_img, preds)
             result_imgs = ImageSelector(result_imgs, labels, confs)
@@ -80,11 +80,11 @@ def main():
             pred_img, label, conf = result_imgs.get_img(st.session_state.index)
             show_image(img, pred_img, label, conf, result_imgs)
 
-        elif selected_model == "HyperKvasir":
-            hyperkvasir = RoboflowModel("https://classify.roboflow.com/hyper-kvasir/1",
-                                          "?api_key=pbzrAqfcSaFRN8OIPpKC", "&format=json",
-                                          {"Content-Type": "application/x-www-form-urlencoded"},
-                                          "class")
+        elif selected_model == "Detector de câncer de pele":
+            hyperkvasir = RoboflowModel("https://classify.roboflow.com/detection-of-skin-diseases/1",
+                                        "?api_key=pbzrAqfcSaFRN8OIPpKC", "&format=json",
+                                        {"Content-Type": "application/x-www-form-urlencoded"},
+                                        None)
 
             processed_img, preds = hyperkvasir.predict(img)
             result_imgs, labels, confs= hyperkvasir.show_class_preds(processed_img, preds)
@@ -94,7 +94,6 @@ def main():
             show_image(img, pred_img, label, conf, result_imgs)
         else:
             pass
-    else:
         st.session_state.index = 0
 
 
