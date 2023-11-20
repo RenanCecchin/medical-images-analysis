@@ -1,5 +1,17 @@
-model;title;url
-CheXNet;Reconhecimento de doenças de tórax;https://github.com/arnoweng/CheXNet/tree/master
-Detector de tumores cerebrais;Reconhecimento de tumores cerebrais;https://universe.roboflow.com/roboflow-100/brain-tumor-m2pbp
-Doença de Fígado;Reconhecimento de doenças de fígado;https://universe.roboflow.com/roboflow-100/liver-disease
-Detector de câncer de pele;Reconhecimento de câncer de pele;https://universe.roboflow.com/ucla-xvpad/a-kgfk0
+model;title;url;description_file
+CheXNet;Reconhecimento de doenças de tórax;https://github.com/arnoweng/CheXNet/;chexnet.md
+Detector de tumores cerebrais;Reconhecimento de tumores cerebrais;https://universe.roboflow.com/roboflow-100/brain-tumor-m2pbp;braintumor.md
+Doença de Fígado;Reconhecimento de doenças de fígado;https://universe.roboflow.com/roboflow-100/liver-disease;liverdisease.md
+XRV-DenseNet121-res224-all;Reconhecimento de doenças de tórax;https://github.com/mlmed/torchxrayvision;densenet121-res224-all.md
+XRV-DenseNet121-res224-rsna;Reconhecimento de doenças de tórax;https://github.com/mlmed/torchxrayvision;densenet121-res224-rsna.md
+XRV-DenseNet121-res224-nih;Reconhecimento de doenças de tórax;https://github.com/mlmed/torchxrayvision;densenet121-res224-nih.md
+XRV-DenseNet121-res224-pc;Reconhecimento de doenças de tórax;https://github.com/mlmed/torchxrayvision;densenet121-res224-pc.md
+XRV-DenseNet121-res224-chex;Reconhecimento de doenças de tórax;https://github.com/mlmed/torchxrayvision;densenet121-res224-chex.md
+XRV-DenseNet121-res224-mimic_nb;Reconhecimento de doenças de tórax;https://github.com/mlmed/torchxrayvision;densenet121-res224-mimic_nb.md
+XRV-DenseNet121-res224-mimic_ch;Reconhecimento de doenças de tórax;https://github.com/mlmed/torchxrayvision;densenet121-res224-mimic_ch.md
+XRV-ResNet50-res512-all;Reconhecimento de doenças de tórax;https://github.com/mlmed/torchxrayvision;resnet50-res512-all.md
+XRV-JFHealthcare;Reconhecimento de doenças de tórax;https://github.com/mlmed/torchxrayvision;jfhealthcare.md
+XRV-CheXpert;Reconhecimento de doenças de tórax;https://github.com/mlmed/torchxrayvision;chexpert.md
+Race Prediction Model;Reconhecimento de doenças de tórax;https://github.com/mlmed/torchxrayvision;racepred.md
+Riken Age Prediction Model;Reconhecimento de doenças de tórax;https://github.com/mlmed/torchxrayvision;agepred.md
+Anatomical Segmentation Model;Reconhecimento de doenças de tórax;https://github.com/mlmed/torchxrayvision;anatomicalseg.md

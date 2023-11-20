@@ -7,19 +7,22 @@ class ImageSelector():
         self.confs = confs
     
     def get_img(self, index):
-        return self.imgs[index], self.labels[index], self.confs[index]
-    
-    def next(self):
-        if st.session_state.index + 1 < len(self.imgs):
+        if index < len(self.imgs):
+            return self.imgs[index], self.labels[index], self.confs[index]
+        else:
+            return None, None, None
+
+    def next(image_selector):
+        if st.session_state.index + 1 < len(image_selector.imgs):
             st.session_state.index += 1
         else:
             st.session_state.index = 0
-    
-    def prev(self):
+
+    def prev(image_selector):
         if st.session_state.index - 1 >= 0:
             st.session_state.index -= 1
         else:
-            st.session_state.index = len(self.imgs) - 1
+            st.session_state.index = len(image_selector.imgs) - 1
     
     def __len__(self):
         return len(self.imgs)

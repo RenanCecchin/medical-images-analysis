@@ -1,19 +1,13 @@
 import os
 import re
-import streamlit as st
 import numpy as np
 import torch
 import torch.nn as nn
-from torch.nn import functional as F
 import torchvision
 import torchvision.transforms as transforms
-from torchvision.models.feature_extraction import get_graph_node_names
-from torch.utils.data import DataLoader
 from PIL import Image
 import cv2 as cv
 
-CLASS_NAMES = [ 'Atelectasis', 'Cardiomegaly', 'Effusion', 'Infiltration', 'Mass', 'Nodule', 'Pneumonia',
-                'Pneumothorax', 'Consolidation', 'Edema', 'Emphysema', 'Fibrosis', 'Pleural_Thickening', 'Hernia']
 
 class DenseNet121(nn.Module):
     """Model modified.
@@ -22,6 +16,7 @@ class DenseNet121(nn.Module):
     except the classifier layer which has an additional sigmoid function.
 
     """
+
     def __init__(self, out_size):
         super(DenseNet121, self).__init__()
         self.densenet121 = torchvision.models.densenet121(pretrained=True)
@@ -35,11 +30,16 @@ class DenseNet121(nn.Module):
         x = self.densenet121(x)
         return x
 
-class CheXNet():
+
+class CheXNet:
     def __init__(self, ckpt_path):
-        self.model = DenseNet121(14) 
+        self.model = DenseNet121(14)
+        self.CLASS_NAMES = ["Atelectasia", "Cardiomegalia", "Derrame pleural (Efusão)", "Infiltração", "Massa",
+                            "Nódulo", "Pneumonia", "Pneumotórax", "Consolidação", "Edema",
+                            "Enfisema", "Fibrose", "Espessamento pleural", "Hérnia"]
         # hook the feature extractor
         self.features_blobs = []
+
         def hook_feature(module, input, output):
             self.features_blobs.append(output.data.cpu().numpy())
 
@@ -66,7 +66,7 @@ class CheXNet():
                 new_key = new_key[7:] if remove_data_parallel else new_key
                 state_dict[new_key] = state_dict[key]
                 # Delete old key only if modified.
-                if match or remove_data_parallel: 
+                if match or remove_data_parallel:
                     del state_dict[key]
 
             self.model.load_state_dict(state_dict)
@@ -77,19 +77,21 @@ class CheXNet():
         self.model.eval()
 
         normalize = transforms.Normalize([0.485, 0.456, 0.406],
-                                     [0.229, 0.224, 0.225])
-        self.transform=transforms.Compose([
-                                        transforms.Resize(256),
-                                        transforms.TenCrop(224),
-                                        transforms.Lambda
-                                        (lambda crops: torch.stack([transforms.ToTensor()(crop) for crop in crops])),
-                                        transforms.Lambda
-                                        (lambda crops: torch.stack([normalize(crop) for crop in crops]))
-                                        ])
-    
+                                         [0.229, 0.224, 0.225])
+        self.transform = transforms.Compose([
+            transforms.Resize(256),
+            transforms.TenCrop(224),
+            transforms.Lambda
+            (lambda crops: torch.stack([transforms.ToTensor()(crop) for crop in crops])),
+            transforms.Lambda
+            (lambda crops: torch.stack([normalize(crop) for crop in crops]))
+        ])
 
     def get_class(self, pred):
-        return CLASS_NAMES[pred] 
+        if pred is not None:
+            return self.CLASS_NAMES[pred]
+        else:
+            return None
 
     def returnCAM(self, feature_conv, weight_softmax, class_idx):
         # generate the class activation maps upsample to 256x256
@@ -97,7 +99,7 @@ class CheXNet():
         bz, nc, h, w = feature_conv.shape
         output_cam = []
         for idx in class_idx:
-            feature_conv_flat = feature_conv.reshape((nc, bz*h*w))
+            feature_conv_flat = feature_conv.reshape((nc, bz * h * w))
             cam = weight_softmax[idx].dot(feature_conv_flat)
             # Slice a 7x7 matrix
             cam = cam[0:49]
@@ -106,8 +108,8 @@ class CheXNet():
             cam_img = cam / np.max(cam)
             cam_img = np.uint8(255 * cam_img)
             output_cam.append(cv.resize(cam_img, size_upsample))
-        return output_cam   
-    
+        return output_cam
+
     def predict(self, image, conf_threshold=0.5):
         """
         Args:
@@ -134,12 +136,12 @@ class CheXNet():
             return pred_classes, pred_probs, cams
         else:
             return None, None, None
-        #max_prob, pred_class = pred_mean.max(0)
+        # max_prob, pred_class = pred_mean.max(0)
 
-        #class_idx = pred_class.item()
-        #cam = self.returnCAM(self.features_blobs[0], self.weight_softmax, [class_idx])
-        
-        #return pred_class.item(), max_prob.item(), cam
+        # class_idx = pred_class.item()
+        # cam = self.returnCAM(self.features_blobs[0], self.weight_softmax, [class_idx])
+
+        # return pred_class.item(), max_prob.item(), cam
 
 
 if __name__ == '__main__':
@@ -159,7 +161,7 @@ if __name__ == '__main__':
     i = 0
     for cam in cams:
         height, width, _ = img.shape
-        heatmap = cv.applyColorMap(cv.resize(cam,(width, height)), cv.COLORMAP_JET)
+        heatmap = cv.applyColorMap(cv.resize(cam, (width, height)), cv.COLORMAP_JET)
         result = heatmap * 0.3 + img * 0.5
         result = result.astype(np.uint8)
         cv.imshow('CAM' + str(i) + "pred:" + CLASS_NAMES[pred] + " " + " prob:" + str(probs), result)
