@@ -1,5 +1,6 @@
 future
 opencv-python-headless
+matplotlib
 numpy
 pandas
 pillow
