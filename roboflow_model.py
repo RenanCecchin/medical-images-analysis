@@ -163,3 +163,35 @@ class LiverDiseaseDetector(RoboflowModel, StreamlitPage):
 
         self.title()
         self.description()
+
+
+class BreastCancerDetector(RoboflowModel, StreamlitPage):
+    def __init__(self):
+        super().__init__("https://detect.roboflow.com/breast-cancer-jhv7w/1",
+                         "?api_key=pbzrAqfcSaFRN8OIPpKC", "&format=json",
+                         {"Content-Type": "application/x-www-form-urlencoded"},
+                         "class")
+
+    def predict(self, img, conf_threshold=50):
+        predicted_img, preds = super().predict(img)
+        return self.show_bb_preds(predicted_img, preds)
+
+    def title(self):
+        st.title("Detecção de câncer de mama")
+
+    def description(self):
+        pass
+
+    def show_image(self, img, pred_img, label, conf, result_imgs):
+        super().show_image(img, pred_img, label, conf, result_imgs)
+
+    def run(self, img, conf_threshold):
+        if img is not None:
+            img = Image.open(img)
+            result_imgs, labels, confs = self.predict(img, conf_threshold=conf_threshold)
+            result_imgs = ImageSelector(result_imgs, labels, confs)
+            pred_img, label, conf = result_imgs.get_img(st.session_state.index)
+            self.show_image(img, pred_img, label, conf, result_imgs)
+
+        self.title()
+        self.description()

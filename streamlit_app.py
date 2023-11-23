@@ -1,7 +1,7 @@
 import streamlit as st
 from image_selector import ImageSelector
 from CheXNet import CheXNet
-from roboflow_model import BrainTumorDetector, LiverDiseaseDetector
+from roboflow_model import BrainTumorDetector, LiverDiseaseDetector, BreastCancerDetector
 import cv2 as cv
 import numpy as np
 import pandas as pd
@@ -63,6 +63,8 @@ def main():
         model = BrainTumorDetector()
     elif selected_model == "Doença de Fígado":
         model = LiverDiseaseDetector()
+    elif selected_model == "Detector de câncer de mama":
+        model = BreastCancerDetector()
     elif selected_model == "Detector de 18 doenças de tórax":
         model = TorchXRayModels.DenseNetModel("densenet121-res224-all", conf_threshold=conf_threshold)
     elif selected_model == "Detector de opacidade pulmonar e pneumonia":
