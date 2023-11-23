@@ -1,5 +1,5 @@
 ##  Descrição do modelo
-Este é um modelo pré-treinado disponível por meio da biblioteca [TorchXRayVision](https://github.com/mlmed/torchxrayvision). Ele é capaz de detectar 18 doenças de tórax.
+Este é um modelo pré-treinado disponível por meio da biblioteca [TorchXRayVision](https://github.com/mlmed/torchxrayvision). Ele foi treinado com o dataset [MIMIC CXR do MIT](https://github.com/MIT-LCP/mimic-cxr) e é capaz de detectar 11 doenças de tórax.
 
 ## Doenças detectadas
 - Atelectasia
@@ -8,15 +8,8 @@ Este é um modelo pré-treinado disponível por meio da biblioteca [TorchXRayVis
 - Consolidação
 - Derrame pleural (Efusão)
 - Edema
-- Enfisema
-- Espessamento pleural
-- Fibrose
 - Fratura
-- Hérnia
-- Infiltração
 - Lesão pulmonar
-- Massa
-- Nódulo
 - Opacidade pulmonar
 - Pneumonia
 - Pneumotórax

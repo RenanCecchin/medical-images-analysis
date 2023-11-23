@@ -7,6 +7,9 @@ import torchvision
 import torchvision.transforms as transforms
 from PIL import Image
 import cv2 as cv
+from image_selector import ImageSelector
+from layout import StreamlitPage
+import streamlit as st
 
 
 class DenseNet121(nn.Module):
@@ -31,7 +34,8 @@ class DenseNet121(nn.Module):
         return x
 
 
-class CheXNet:
+class CheXNet(StreamlitPage):
+
     def __init__(self, ckpt_path):
         self.model = DenseNet121(14)
         self.CLASS_NAMES = ["Atelectasia", "Cardiomegalia", "Derrame pleural (Efusão)", "Infiltração", "Massa",
@@ -125,6 +129,8 @@ class CheXNet:
         pred_mean = pred.mean(0)
 
         over_threshold = pred_mean > conf_threshold
+        print(pred_mean)
+        print(over_threshold)
         over_threshold_indices = over_threshold.nonzero(as_tuple=True)
 
         if len(over_threshold_indices[0]) > 0:
@@ -136,36 +142,41 @@ class CheXNet:
             return pred_classes, pred_probs, cams
         else:
             return None, None, None
-        # max_prob, pred_class = pred_mean.max(0)
 
-        # class_idx = pred_class.item()
-        # cam = self.returnCAM(self.features_blobs[0], self.weight_softmax, [class_idx])
+    def show_image(self, img, pred_img, label, conf, result_imgs):
+        super().show_image(img, pred_img, label, conf, result_imgs)
 
-        # return pred_class.item(), max_prob.item(), cam
+    def title(self):
+        st.title("Reconhecimento de 14 doenças de tórax")
 
+    def description(self):
+        text = ""
+        with open("descriptions/chexnet.md", "r", encoding="utf-8") as f:
+            text = f.read()
+        st.write(text)
+        input_img, output_img = st.columns(2)
+        input_img.image("sample_data/CheXNet/input_sample.png", caption="Imagem de entrada")
+        output_img.image("sample_data/CheXNet/output_sample.jpg", caption="Imagem de saída com cardiomegalia detectada")
 
-if __name__ == '__main__':
-    ckpt_path = 'model.pth.tar'
-    model = CheXNet(ckpt_path)
+    def run(self, img, conf_threshold):
+        if img is not None:
+            img = Image.open(img)
+            pred, confs, cams = self.predict(img, conf_threshold=conf_threshold)
+            result_imgs = []
+            result_img = np.array(img)
+            result_img = cv.cvtColor(result_img, cv.COLOR_RGB2BGR)
+            if cams is not None:
+                for cam in cams:
+                    height, width, _ = result_img.shape
+                    heatmap = cv.applyColorMap(cv.resize(cam, (width, height)), cv.COLORMAP_JET)
+                    predicted_img = heatmap * 0.3 + result_img * 0.5
+                    result_imgs.append(predicted_img.astype(np.uint8))
 
-    image = Image.open('chest-example1.png')
+            result_imgs = ImageSelector(result_imgs, pred, confs)
+            pred_img, label, conf = result_imgs.get_img(st.session_state.index)
+            cl = self.get_class(label)
 
-    pred, probs, cams = model.predict(image)
+            self.show_image(img, pred_img, cl, conf, result_imgs)
 
-    print(pred)
-    print(probs)
-
-    image = np.array(image)
-    img = cv.cvtColor(image, cv.COLOR_RGB2BGR)
-    cv.imshow('original', image)
-    i = 0
-    for cam in cams:
-        height, width, _ = img.shape
-        heatmap = cv.applyColorMap(cv.resize(cam, (width, height)), cv.COLORMAP_JET)
-        result = heatmap * 0.3 + img * 0.5
-        result = result.astype(np.uint8)
-        cv.imshow('CAM' + str(i) + "pred:" + CLASS_NAMES[pred] + " " + " prob:" + str(probs), result)
-        i += 1
-
-    cv.waitKey(0)
-    cv.destroyAllWindows()
+        self.title()
+        self.description()

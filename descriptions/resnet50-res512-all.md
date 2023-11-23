@@ -1,10 +1,9 @@
 ##  Descrição do modelo
-Este é um modelo pré-treinado disponível por meio da biblioteca [TorchXRayVision](https://github.com/mlmed/torchxrayvision). Ele é capaz de detectar 18 doenças de tórax.
+Este é um modelo pré-treinado disponível por meio da biblioteca [TorchXRayVision](https://github.com/mlmed/torchxrayvision). Ele é capaz de detectar 17 doenças de tórax.
 
 ## Doenças detectadas
 - Atelectasia
 - Cardiomegalia
-- Cardiomediastino aumentado
 - Consolidação
 - Derrame pleural (Efusão)
 - Edema
@@ -14,7 +13,6 @@ Este é um modelo pré-treinado disponível por meio da biblioteca [TorchXRayVis
 - Fratura
 - Hérnia
 - Infiltração
-- Lesão pulmonar
 - Massa
 - Nódulo
 - Opacidade pulmonar
@@ -22,7 +20,7 @@ Este é um modelo pré-treinado disponível por meio da biblioteca [TorchXRayVis
 - Pneumotórax
 
 ## Entrada
-- Imagem de raio-x **frontal** de tórax, preferencialmente em formato 224x224
+- Imagem de raio-x **frontal** de tórax, preferencialmente em formato 512x512
 
 ## Saída
 - Probabilidade de cada doença detectada com precisão acima do limite definido pelo usuário

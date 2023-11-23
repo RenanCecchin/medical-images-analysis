@@ -20,12 +20,7 @@ Este é um modelo pré-treinado disponível [aqui](https://github.com/arnoweng/C
 ## Entrada
 - Imagem de raio-x **frontal** de tórax
 
-
 ## Saída
 - Um mapa de calor com as regiões de interesse para as doenças detectadas com confiança superior às restrições do usuário
 
-# Modelo disponível para uso
-
-Exemplo de entrada e saída  :
-
-![exemplo de entrada](https://imgs.search.brave.com/6sR23hyjZGwG5oW0OFo742gr_62WGN_HecZZ2f0yJ_A/rs:fit:860:0:0/g:ce/aHR0cHM6Ly9zdGFu/Zm9yZG1sZ3JvdXAu/Z2l0aHViLmlvL3By/b2plY3RzL2NoZXhu/ZXQvaW1nL2NoZXgt/bWFpbi5zdmc.svg)
+## Exemplo de entrada e saída  :
