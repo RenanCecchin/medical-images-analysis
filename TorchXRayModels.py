@@ -73,6 +73,7 @@ class DenseNetModel(TorchXRayModel, StreamlitPage):
     def run(self, img, conf_threshold):
         if img is not None:
             img = Image.open(img)
+            img = np.array(img)
             pred = self.predict(img)
             labels = list(pred["preds"].keys())
             confs = list(pred["preds"].values())
@@ -113,6 +114,7 @@ class ResNetModel(TorchXRayModel, StreamlitPage):
     def run(self, img, conf_threshold):
         if img is not None:
             img = Image.open(img)
+            img = np.array(img)
             pred = self.predict(img)
             labels = list(pred["preds"].keys())
             confs = list(pred["preds"].values())
@@ -151,6 +153,7 @@ class JFHealthcareModel(TorchXRayModel, StreamlitPage):
     def run(self, img, conf_threshold):
         if img is not None:
             img = Image.open(img)
+            img = np.array(img)
             pred = self.predict(img)
             labels = list(pred["preds"].keys())
             confs = list(pred["preds"].values())
@@ -202,6 +205,7 @@ class SegmentationModel(StreamlitPage):
     def run(self, img, conf_threshold):
         if img is not None:
             img = Image.open(img)
+            img = np.array(img)
             preds = model.predict(np.expand_dims(np.array(img), axis=0))
             preds = preds.numpy()[0]
             preds = self.predict(img)

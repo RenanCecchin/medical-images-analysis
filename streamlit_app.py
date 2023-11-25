@@ -85,8 +85,6 @@ def main():
         model = TorchXRayModels.JFHealthcareModel(conf_threshold=conf_threshold)
     elif selected_model == "Modelo de segmentação anatômica":
         model = TorchXRayModels.SegmentationModel()
-    else:
-        pass
 
     model.run(img, conf_threshold)
 
