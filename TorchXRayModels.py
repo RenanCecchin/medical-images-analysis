@@ -8,6 +8,7 @@ import streamlit as st
 import numpy as np
 from image_selector import ImageSelector
 from layout import StreamlitPage
+from PIL import Image
 
 
 class TorchXRayModel(ABC):
