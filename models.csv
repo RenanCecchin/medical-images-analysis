@@ -1,4 +1,5 @@
 model;title;url;description_file
+Introdução;None;None;None
 CheXNet;Reconhecimento de doenças de tórax;https://github.com/arnoweng/CheXNet/;chexnet.md
 Detector de tumores cerebrais;Reconhecimento de tumores cerebrais;https://universe.roboflow.com/roboflow-100/brain-tumor-m2pbp;braintumor.md
 Doença de Fígado;Reconhecimento de doenças de fígado;https://universe.roboflow.com/roboflow-100/liver-disease;liverdisease.md
