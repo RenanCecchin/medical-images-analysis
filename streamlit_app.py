@@ -56,15 +56,14 @@ def main():
         img = st.file_uploader("Selecione uma imagem", type=["jpg", "png", "svg"])
     if "index" not in st.session_state:
         st.session_state.index = 0
-    print(conf_threshold)
+
     model = None
     if selected_model == "Introdução":
         st.title("Introdução")
         st.write("Neste site você pode testar modelos de IA para detecção de doenças em imagens médicas")
         st.write("Para isso, basta selecionar o modelo desejado no menu lateral e fazer o upload de uma imagem")
         st.write("O modelo irá detectar a doença na imagem e mostrar a imagem com a doença destacada")
-        st.write(
-            "Você pode mudar o limite de confiança do modelo no menu lateral (valores de confiança muito baixos podem gerar falsos positivos)")
+        st.write("Você pode mudar o limite de confiança do modelo no menu lateral (valores de confiança muito baixos podem gerar falsos positivos)")
         st.write("Você pode mudar a imagem mostrada clicando nos botões de anterior e próximo")
         st.write("Você pode ver a descrição de cada modelo ao clicar no seu respectivo nome no menu lateral")
         st.write("Abaixo você pode ver um vídeo de introdução sobre a plataforma")
@@ -80,8 +79,6 @@ def main():
         model = BrainTumorDetector()
     elif selected_model == "Doença de Fígado":
         model = LiverDiseaseDetector()
-    elif selected_model == "Detector de câncer de mama":
-        model = BreastCancerDetector()
     elif selected_model == "Detector de 18 doenças de tórax":
         model = TorchXRayModels.DenseNetModel("densenet121-res224-all", conf_threshold=conf_threshold)
     elif selected_model == "Detector de opacidade pulmonar e pneumonia":
