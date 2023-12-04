@@ -68,7 +68,7 @@ def main():
         st.write("Você pode mudar a imagem mostrada clicando nos botões de anterior e próximo")
         st.write("Você pode ver a descrição de cada modelo ao clicar no seu respectivo nome no menu lateral")
         st.write("Abaixo você pode ver um vídeo de introdução sobre a plataforma")
-        st.video("Introducao.mp4")
+        st.video("https://www.youtube.com/watch?v=LG39OWQErSc")
 
         st.write("Peço que testem a plataforma durante a semana de 04/12/2023 a 10/12/2023 e, se possível, respondam "
                  "a esse [formulário](https://forms.gle/ETDrxokbvA6udcgy7) de feedback para que eu possa melhorar a "
