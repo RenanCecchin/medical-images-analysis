@@ -80,8 +80,6 @@ def main():
         model = BrainTumorDetector()
     elif selected_model == "Doença de Fígado":
         model = LiverDiseaseDetector()
-    elif selected_model == "Detector de câncer de mama":
-        model = BreastCancerDetector()
     elif selected_model == "Detector de 18 doenças de tórax":
         model = TorchXRayModels.DenseNetModel("densenet121-res224-all", conf_threshold=conf_threshold)
     elif selected_model == "Detector de opacidade pulmonar e pneumonia":
