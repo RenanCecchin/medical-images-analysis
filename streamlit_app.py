@@ -40,7 +40,7 @@ def main():
     models = pd.read_csv("models.csv", sep=";")
 
     selected_model = st.sidebar.selectbox("Selecione o modelo", models["model"].values)
-    conf_threshold = st.sidebar.slider("Confidence threshold", 0, 100, 70) / 100.0
+    conf_threshold = st.sidebar.slider("Limite de Confiança", 0, 100, 70) / 100.0
 
     #st.title(models.loc[models["model"] == selected_model, "title"].values[0])
     #descriptions_file_name = models.loc[models["model"] == selected_model, "description_file"].values[0]
@@ -52,12 +52,29 @@ def main():
     #        st.markdown(f.read())'''
 
     # Create the image uploader
-    img = st.file_uploader("Upload an image", type=["jpg", "png", "svg"])
+    if selected_model != "Introdução":
+        img = st.file_uploader("Selecione uma imagem", type=["jpg", "png", "svg"])
     if "index" not in st.session_state:
         st.session_state.index = 0
     print(conf_threshold)
     model = None
-    if selected_model == "CheXNet":
+    if selected_model == "Introdução":
+        st.title("Introdução")
+        st.write("Neste site você pode testar modelos de IA para detecção de doenças em imagens médicas")
+        st.write("Para isso, basta selecionar o modelo desejado no menu lateral e fazer o upload de uma imagem")
+        st.write("O modelo irá detectar a doença na imagem e mostrar a imagem com a doença destacada")
+        st.write(
+            "Você pode mudar o limite de confiança do modelo no menu lateral (valores de confiança muito baixos podem gerar falsos positivos)")
+        st.write("Você pode mudar a imagem mostrada clicando nos botões de anterior e próximo")
+        st.write("Você pode ver a descrição de cada modelo ao clicar no seu respectivo nome no menu lateral")
+        st.write("Abaixo você pode ver um vídeo de introdução sobre a plataforma")
+        st.video("Introducao.mp4")
+
+        st.write("Peço que testem a plataforma durante a semana de 04/12/2023 a 10/12/2023 e, se possível, respondam "
+                 "a esse [formulário](https://forms.gle/ETDrxokbvA6udcgy7) de feedback para que eu possa melhorar a "
+                 "plataforma e integrar os resultados ao meu TCC")
+
+    elif selected_model == "CheXNet":
         model = CheXNet('model.pth.tar')
     elif selected_model == "Detector de tumores cerebrais":
         model = BrainTumorDetector()
@@ -86,7 +103,8 @@ def main():
     elif selected_model == "Modelo de segmentação anatômica":
         model = TorchXRayModels.SegmentationModel()
 
-    model.run(img, conf_threshold)
+    if selected_model != "Introdução":
+        model.run(img, conf_threshold)
 
 
 if __name__ == "__main__":

@@ -126,16 +126,14 @@ class CheXNet(StreamlitPage):
         with torch.no_grad():
             pred = self.model(image)
 
-        pred_mean = pred.mean(0)
+        pred_array = pred[0]
 
-        over_threshold = pred_mean > conf_threshold
-        print(pred_mean)
-        print(over_threshold)
+        over_threshold = pred_array > conf_threshold
         over_threshold_indices = over_threshold.nonzero(as_tuple=True)
 
         if len(over_threshold_indices[0]) > 0:
             pred_classes = over_threshold_indices[0].tolist()
-            pred_probs = pred_mean[over_threshold].tolist()
+            pred_probs = pred_array[over_threshold].tolist()
 
             cams = self.returnCAM(self.features_blobs[0], self.weight_softmax, pred_classes)
 
