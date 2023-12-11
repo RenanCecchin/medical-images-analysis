@@ -65,7 +65,7 @@ class DenseNetModel(TorchXRayModel, StreamlitPage):
         st.write(text)
         input_img, output_img = st.columns(2)
         input_img.image("sample_data/CheXNet/input_sample.png", caption="Imagem de entrada")
-        output_img.image(f"sample_data/CheXNet/output_{self.model_name}_sample.jpg", caption="Imagem de saída com cardiomegalia detectada")
+        #output_img.image(f"sample_data/CheXNet/output_{self.model_name}_sample.jpg", caption="Imagem de saída com cardiomegalia detectada")
 
     def show_image(self, img, pred_img, label, conf, result_imgs):
         super().show_image(img, pred_img, label, conf, result_imgs)
@@ -105,8 +105,8 @@ class ResNetModel(TorchXRayModel, StreamlitPage):
         st.write(text)
         input_img, output_img = st.columns(2)
         input_img.image("sample_data/CheXNet/input_sample.png", caption="Imagem de entrada")
-        output_img.image(f"sample_data/CheXNet/output_{model_name}_sample.jpg",
-                         caption="Imagem de saída com cardiomegalia detectada")
+        #output_img.image(f"sample_data/CheXNet/output_{model_name}_sample.jpg",
+        #                 caption="Imagem de saída com cardiomegalia detectada")
 
     def show_image(self, img, pred_img, label, conf, result_imgs):
         super().show_image(img, pred_img, label, conf, result_imgs)
@@ -144,8 +144,8 @@ class JFHealthcareModel(TorchXRayModel, StreamlitPage):
         st.write(text)
         input_img, output_img = st.columns(2)
         input_img.image("sample_data/CheXNet/input_sample.png", caption="Imagem de entrada")
-        output_img.image(f"sample_data/CheXNet/output_{model_name}_sample.jpg",
-                         caption="Imagem de saída com cardiomegalia detectada")
+        #output_img.image(f"sample_data/CheXNet/output_{model_name}_sample.jpg",
+        #                 caption="Imagem de saída com cardiomegalia detectada")
 
     def show_image(self, img, pred_img, label, conf, result_imgs):
         super().show_image(img, pred_img, label, conf, result_imgs)
@@ -175,11 +175,6 @@ class SegmentationModel(StreamlitPage):
 
     def predict(self, img):
         img = xrv.datasets.normalize(img, 255)
-        img = img.mean(2)[None, ...]
-
-        transform = torchvision.transforms.Compose([xrv.datasets.XRayCenterCrop(), xrv.datasets.XRayResizer(512)])
-
-        img = transform(img)
         img = torch.from_numpy(img)
 
         with torch.no_grad():
@@ -196,18 +191,32 @@ class SegmentationModel(StreamlitPage):
         st.write(text)
         input_img, output_img = st.columns(2)
         input_img.image("sample_data/CheXNet/input_sample.png", caption="Imagem de entrada")
-        output_img.image(f"sample_data/CheXNet/output_segmentation_sample.jpg",
-                         caption="Imagem de saída com cardiomegalia detectada")
+        #output_img.image(f"sample_data/CheXNet/output_segmentation_sample.jpg",
+        #                 caption="Imagem de saída com cardiomegalia detectada")
 
     def show_image(self, img, pred_img, label, conf, result_imgs):
-        super().show_image(img, pred_img, label, conf, result_imgs)
+        original, predicted = st.columns(2)
+        original.write(f"<p style='text-align: center; font-size: 20px;'>Original</p>", unsafe_allow_html=True)
+        original.image(img, channels="RGB")
+        if pred_img is None:
+            predicted.write("Nada detectado")
+            predicted.image(img, channels="RGB")
+        else:
+            predicted.write(
+                f"<p style='text-align: center; font-size: 20px;'>{label} Probabilidade: {round(conf * 100, 2)}</p>",
+                unsafe_allow_html=True)
+            predicted.image(pred_img, channels="RGB", clamp=True)
+            prev, index, nex = predicted.columns(3)
+            prev.button("Anterior", on_click=result_imgs.prev)
+            index.write(
+                f"<p style='text-align: center; font-size: 20px;'>{st.session_state.index + 1}/{len(result_imgs)}</p>",
+                unsafe_allow_html=True)
+            nex.button("Próxima", on_click=result_imgs.next)
 
     def run(self, img, conf_threshold):
         if img is not None:
             img = Image.open(img)
             img = np.array(img)
-            preds = model.predict(np.expand_dims(np.array(img), axis=0))
-            preds = preds.numpy()[0]
             preds = self.predict(img)
             preds = preds.numpy()[0]
             labels = self.get_labels()
