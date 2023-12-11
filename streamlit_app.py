@@ -71,7 +71,7 @@ def main():
         st.video("https://www.youtube.com/watch?v=LG39OWQErSc")
 
         st.write("Peço que testem a plataforma durante a semana de 04/12/2023 a 10/12/2023 e, se possível, respondam "
-                 "a esse [formulário](https://forms.gle/ETDrxokbvA6udcgy7) de feedback para que eu possa melhorar a "
+                 "a esse [formulário](https://forms.gle/wXiJ9Vomys5SLqAG7) de feedback para que eu possa melhorar a "
                  "plataforma e integrar os resultados ao meu TCC")
 
     elif selected_model == "CheXNet":
