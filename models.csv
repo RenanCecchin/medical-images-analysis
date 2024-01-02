@@ -13,3 +13,4 @@ MIMIC CXR NegBio;Reconhecimento de doenças de tórax;https://github.com/mlmed/t
 Detector de doenças de tórax ResNet50;Reconhecimento de doenças de tórax;https://github.com/mlmed/torchxrayvision;resnet50-res512-all.md
 Detector de doenças de tórax do JF Healthcare;Reconhecimento de doenças de tórax;https://github.com/mlmed/torchxrayvision;jfhealthcare.md
 Modelo de segmentação anatômica;Reconhecimento de doenças de tórax;https://github.com/mlmed/torchxrayvision;anatomicalseg.md
+Modelo Externo;None;None;None

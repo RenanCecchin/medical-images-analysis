@@ -1,10 +1,12 @@
 future
+keras
 opencv-python-headless
 matplotlib
 numpy
 pandas
 pillow
 scipy
+tensorflow
 torch
 torchvision
 scipy

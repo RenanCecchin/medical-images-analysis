@@ -225,14 +225,6 @@ class SegmentationModel(StreamlitPage):
             result_imgs = ImageSelector(preds, labels, confs)
 
             pred_img, label, conf = result_imgs.get_img(st.session_state.index)
-            # Normalize between 0 and 1
-            # pred_img = (pred_img - np.min(pred_img)) / (np.max(pred_img) - np.min(pred_img))
-            # pred_img = pred_img.astype(np.float64)
-            print("Final")
-            print(pred_img)
-            print(np.max(pred_img))
-            print(np.min(pred_img))
-            print(pred_img.shape)
             self.show_image(img, pred_img, label, conf, result_imgs)
 
         self.title()

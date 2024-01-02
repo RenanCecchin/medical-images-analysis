@@ -1,12 +1,13 @@
 import streamlit as st
 from image_selector import ImageSelector
-from CheXNet import CheXNet
+from chexnet import CheXNet
 from roboflow_model import BrainTumorDetector, LiverDiseaseDetector, BreastCancerDetector
 import cv2 as cv
 import numpy as np
 import pandas as pd
 import os
-import TorchXRayModels
+import torchxraymodels
+from external_model import ExternalModel, AddModelLayout
 from PIL import Image
 
 
@@ -65,6 +66,10 @@ def main():
                  "a esse [formulário](https://forms.gle/wXiJ9Vomys5SLqAG7) de feedback para que eu possa melhorar a "
                  "plataforma e integrar os resultados ao meu TCC")
 
+    elif selected_model == "Modelo Externo":
+        model = AddModelLayout()
+
+        added_model = model.run(None, conf_threshold)
 
     else:
         # Create the image uploader
@@ -77,26 +82,25 @@ def main():
         elif selected_model == "Doença de Fígado":
             model = LiverDiseaseDetector()
         elif selected_model == "Detector de 18 doenças de tórax":
-            model = TorchXRayModels.DenseNetModel("densenet121-res224-all", conf_threshold=conf_threshold)
+            model = torchxraymodels.DenseNetModel("densenet121-res224-all", conf_threshold=conf_threshold)
         elif selected_model == "Detector de opacidade pulmonar e pneumonia":
-            model = TorchXRayModels.DenseNetModel("densenet121-res224-rsna", conf_threshold=conf_threshold)
+            model = torchxraymodels.DenseNetModel("denseness121-res224-rsna", conf_threshold=conf_threshold)
         elif selected_model == "NIH ChestX-ray14":
-            model = TorchXRayModels.DenseNetModel("densenet121-res224-nih", conf_threshold=conf_threshold)
+            model = torchxraymodels.DenseNetModel("densenet121-res224-nih", conf_threshold=conf_threshold)
         elif selected_model == "PadChest":
-            model = TorchXRayModels.DenseNetModel("densenet121-res224-pc", conf_threshold=conf_threshold)
+            model = torchxraymodels.DenseNetModel("densenet121-res224-pc", conf_threshold=conf_threshold)
         elif selected_model == "CheXpert":
-            model = TorchXRayModels.DenseNetModel("densenet121-res224-chex", conf_threshold=conf_threshold)
+            model = torchxraymodels.DenseNetModel("densenet121-res224-chex", conf_threshold=conf_threshold)
         elif selected_model == "MIMIC CXR CheXPert":
-            model = TorchXRayModels.DenseNetModel("densenet121-res224-mimic_nb", conf_threshold=conf_threshold)
+            model = torchxraymodels.DenseNetModel("densenet121-res224-mimic_nb", conf_threshold=conf_threshold)
         elif selected_model == "MIMIC CXR NegBio":
-            model = TorchXRayModels.DenseNetModel("densenet121-res224-mimic_ch", conf_threshold=conf_threshold)
+            model = torchxraymodels.DenseNetModel("densenet121-res224-mimic_ch", conf_threshold=conf_threshold)
         elif selected_model == "Detector de doenças de tórax ResNet50":
-            model = TorchXRayModels.ResNetModel(conf_threshold=conf_threshold)
+            model = torchxraymodels.ResNetModel(conf_threshold=conf_threshold)
         elif selected_model == "Detector de doenças de tórax do JF Healthcare":
-            model = TorchXRayModels.JFHealthcareModel(conf_threshold=conf_threshold)
+            model = torchxraymodels.JFHealthcareModel(conf_threshold=conf_threshold)
         elif selected_model == "Modelo de segmentação anatômica":
-            model = TorchXRayModels.SegmentationModel()
-
+            model = torchxraymodels.SegmentationModel()
         model.run(img, conf_threshold)
 
 
